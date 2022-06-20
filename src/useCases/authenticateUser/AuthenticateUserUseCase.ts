@@ -1,38 +1,47 @@
 import { client } from '../../prisma/client';
 import { compare } from 'bcryptjs';
 import { sign } from 'jsonwebtoken';
+import { GenerateRefreshToken } from '../../provider/GenerateRefreshToken';
+import { GenerateTokenProvider } from '../../provider/GenerateTokenProvider';
+import { AppError } from '../../errors';
 
 interface IRequest {
-  username: string;
+  email: string;
   password: string;
 }
 
 class AuthenticateUserUseCase {
-  async execute({ username, password }: IRequest) {
+  async execute({ email, password }: IRequest) {
     //Verificar se o usuário existencia
     const userAlreadyExists = await client.user.findFirst({
-      where: { username },
+      where: { email },
     });
 
-    
     if (!userAlreadyExists) {
-      throw new Error('User or password incorrect');
+      throw new AppError('User or password incorrect');
     }
 
     const passwordMatch = await compare(password, userAlreadyExists.password);
 
     if (!passwordMatch) {
-      throw new Error('User or password incorrect');
+      throw new AppError('User or password incorrect');
     }
 
-    const token = sign({}, '7c18ae8f-6695-4add-87e6-89d6d2da059f', {
-      subject: userAlreadyExists.id,
-      expiresIn: '20s',
+    //gerar token do usuario
+
+    const generateTokenProvider = new GenerateTokenProvider();
+    const token = await generateTokenProvider.execute(userAlreadyExists.id);
+
+    await client.refreshToken.deleteMany({
+      where: { userId: userAlreadyExists.id },
     });
 
-    console.log(token)
+    const generateRefreshToken = new GenerateRefreshToken();
+    const refreshToken = await generateRefreshToken.execute(
+      userAlreadyExists.id
+    );
 
-    return { token };
+    return { token, refreshToken };
   }
 }
 
