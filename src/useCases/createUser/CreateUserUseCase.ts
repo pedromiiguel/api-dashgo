@@ -1,21 +1,22 @@
 import { client } from '../../prisma/client';
 import { hash } from 'bcryptjs';
+import { AppError } from '../../errors';
 
 interface IUserResquest {
   name: string;
-  username: string;
+  email: string;
   password: string;
 }
 
 class CreateUserUseCase {
-  async execute({ name, username, password }: IUserResquest) {
+  async execute({ name, email, password }: IUserResquest) {
     //Verificar se o usuário existe
     const userAlreadyExist = await client.user.findFirst({
-      where: { username },
+      where: { email },
     });
 
     if (userAlreadyExist) {
-      throw new Error('User already exists');
+      throw new AppError('User already exists');
     }
     //Cadastrar o usuário
 
@@ -24,7 +25,7 @@ class CreateUserUseCase {
     const user = await client.user.create({
       data: {
         name,
-        username,
+        email,
         password: passwordHash,
       },
     });
