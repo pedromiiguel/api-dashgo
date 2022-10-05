@@ -3,10 +3,16 @@ import { FindAllUsersUseCase } from './FindAllUsersUseCase';
 
 class FindAllUsersController {
   async handle(request: Request, response: Response) {
-    const findAllUsersUseCase = new FindAllUsersUseCase();
-    const users = await findAllUsersUseCase.execute();
+    const { page, limit } = request.query;
 
-    return response.json(users);
+    const findAllUsersUseCase = new FindAllUsersUseCase();
+    const { users, userCount } = await findAllUsersUseCase.execute({
+      page,
+      limit,
+    });
+
+    response.header("Access-Control-Expose-Headers", "*")
+    return response.header('X-total-count', String(userCount)).json(users);
   }
 }
 
