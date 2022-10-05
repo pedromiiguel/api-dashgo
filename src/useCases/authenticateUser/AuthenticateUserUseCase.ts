@@ -17,14 +17,20 @@ class AuthenticateUserUseCase {
       where: { email },
     });
 
+    const user = {
+      id: userAlreadyExists.id,
+      email: userAlreadyExists.email,
+      name: userAlreadyExists.name,
+    };
+
     if (!userAlreadyExists) {
-      throw new AppError('User or password incorrect');
+      throw new AppError('E-mail ou senha inválidos');
     }
 
     const passwordMatch = await compare(password, userAlreadyExists.password);
 
     if (!passwordMatch) {
-      throw new AppError('User or password incorrect');
+      throw new AppError('E-mail ou senha inválidos');
     }
 
     //gerar token do usuario
@@ -41,7 +47,7 @@ class AuthenticateUserUseCase {
       userAlreadyExists.id
     );
 
-    return { token, refreshToken };
+    return { user, token, refreshToken };
   }
 }
 
