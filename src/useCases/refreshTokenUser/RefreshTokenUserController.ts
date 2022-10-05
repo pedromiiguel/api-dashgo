@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 
-import { RefreshTokenUserUserCase } from './refreshTokenUserUseCase';
+import { RefreshTokenUserUserCase } from './RefreshTokenUserUseCase';
 
 class RefreshTokenUserController {
   async handle(request: Request, response: Response) {
