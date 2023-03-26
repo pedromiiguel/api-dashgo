@@ -1,19 +1,21 @@
 import express, { NextFunction, Request, Response } from 'express';
+import * as dotenv from 'dotenv'
+dotenv.config()
 import cors from 'cors';
-import morgan from 'morgan';
 import 'express-async-errors';
-import { router } from './routes';
+import { routes } from './routes';
 import { AppError } from './errors';
 
 const app = express();
-app.use(morgan())
+const PORT = process.env.PORT || 3333
+
 app.use(cors());
 app.use(express.json());
-app.use(router);
+app.use(routes);
 
 app.use(
   (error: Error, request: Request, response: Response, next: NextFunction) => {
-    if(error instanceof AppError) {
+    if (error instanceof AppError) {
       return response.status(error.statusCode).json({
         message: error.message,
       });
@@ -22,10 +24,10 @@ app.use(
     return response.status(500).json({
       status: 'error',
       message: `Internal server error ${error.message}`,
-    })
+    });
   }
 );
 
-app.listen('3131', () => {
-  console.log('Serve is running on port 3131');
+app.listen(PORT, () => {
+  console.log(`Serve is running on port ${PORT}`);
 });
