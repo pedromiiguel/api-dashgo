@@ -8,8 +8,8 @@
   "license": "MIT",
   "scripts": {
     "dev": "tsx src/server.ts",
-    "build": "tsup src && node html.ts",
-    "start": "node dist/server.js",
+    "build": "tsc",
+    "start": "node dist/server.js"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.2",
