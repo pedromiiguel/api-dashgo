@@ -6,9 +6,9 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 class SendMailer {
   async execute(message: MailDataRequired) {
     try {
-       const response = await sgMail.send(message);
+      const response = await sgMail.send(message);
 
-       console.log(response)
+      return response;
     } catch (error) {
       console.log(error)
       throw new AppError(
