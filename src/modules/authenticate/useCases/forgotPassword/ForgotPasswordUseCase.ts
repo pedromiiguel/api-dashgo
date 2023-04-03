@@ -1,11 +1,8 @@
 import * as crypto from 'crypto';
-import path from 'path';
-import fs from 'fs';
-import handlebars from 'handlebars';
 
 import { AppError } from '../../../../errors';
 import { client } from '../../../../prisma/client';
-import { transporter } from '../../../mailer';
+import { SendMailer } from '../../../../provider/SendMailer';
 
 interface IRequest {
   email: string;
@@ -35,32 +32,18 @@ class ForgotPasswordUseCase {
         },
       });
 
-      const filePath: string = path.join(
-        __dirname,
-        '../../../../resources/mail/auth/forgotPassword.html'
-      );
-      const fileContent: string = fs.readFileSync(filePath, 'utf8');
-      const template = handlebars.compile(fileContent);
-
-      const context = {
-        email,
-        link: `${process.env.DASHGO_URL}/reset-password?token=${token}`,
-      };
-
-      const html = template(context);
-
       const message = {
-        from: process.env.MAILADRESS,
         to: email,
-        subject: ' Dashgo - Recupere sua senha',
-        html,
+        from: process.env.MAILADRESS,
+        templateId: 'd-70e41e2eaacf4570b39a9ff601e4c6ca',
+        dynamic_template_data: {
+          email,
+          link: `${process.env.DASHGO_URL}/reset-password?token=${token}`,
+        },
       };
 
-      return transporter.sendMail(message, (err) => {
-        if (err) {
-          throw new AppError('Ocorreu um erro ao enviar o e-mail');
-        }
-      });
+      const sendMailerProvider = new SendMailer();
+      await sendMailerProvider.execute(message);
     } catch (error) {
       throw new AppError(error.message);
     }

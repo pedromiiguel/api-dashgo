@@ -7,9 +7,14 @@
   },
   "license": "MIT",
   "scripts": {
-    "dev": "tsx src/server.ts",
+    "dev": "tsx watch src/server.ts",
     "build": "tsc",
-    "start": "node dist/server.js"
+    "start": "node dist/server.js",
+    "db:up": "docker compose up",
+    "db:down": "docker compose down",
+    "studio": "npx prisma studio",
+    "migrate": "npx prisma migrate dev",
+    "generate": "npx prisma generate"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.2",
@@ -18,10 +23,12 @@
     "@types/node": "^18.15.5",
     "@types/nodemailer": "^6.4.7",
     "prisma": "4.11.0",
+    "tsx": "^3.12.6",
     "typescript": "^4.5.4"
   },
   "dependencies": {
     "@prisma/client": "4.11.0",
+    "@sendgrid/mail": "^7.7.0",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dayjs": "^1.11.7",
@@ -29,8 +36,6 @@
     "express": "^4.17.2",
     "express-async-errors": "^3.1.1",
     "handlebars": "^4.7.7",
-    "jsonwebtoken": "^8.5.1",
-    "nodemailer": "^6.9.1",
-    "nodemailer-sendgrid-transport": "^0.2.0"
+    "jsonwebtoken": "^8.5.1"
   }
 }
