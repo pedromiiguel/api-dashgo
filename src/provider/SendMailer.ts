@@ -6,8 +6,11 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 class SendMailer {
   async execute(message: MailDataRequired) {
     try {
-      await sgMail.send(message);
+       const response = await sgMail.send(message);
+
+       console.log(response)
     } catch (error) {
+      console.log(error)
       throw new AppError(
         'Ocorreu um erro ao recuperar sua senha, por favor tente novamente!'
       );
