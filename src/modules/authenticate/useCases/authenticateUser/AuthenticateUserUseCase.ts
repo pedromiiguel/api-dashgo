@@ -17,15 +17,15 @@ class AuthenticateUserUseCase {
       where: { email },
     });
 
+    if (!userAlreadyExists) {
+      throw new AppError('E-mail ou senha inválidos');
+    }
+
     const user = {
       id: userAlreadyExists.id,
       email: userAlreadyExists.email,
       name: userAlreadyExists.name,
     };
-
-    if (!userAlreadyExists) {
-      throw new AppError('E-mail ou senha inválidos');
-    }
 
     const passwordMatch = await compare(password, userAlreadyExists.password);
 
